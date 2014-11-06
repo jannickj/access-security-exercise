@@ -1,0 +1,29 @@
+Protocol: PrinterProtocol
+
+Types: Agent c,s,db,F;
+       Number N, Payload;
+       Function hash,pw;
+
+Knowledge: 
+	   	F:  hash;
+		c: s, hash, pw(c);
+	   	s: c,db,hash;
+	   	db: s, hash, hash(pw(c))
+
+
+Actions:
+
+s -> c: N
+
+c -> s: Payload, hash(N,hash(hash(Payload), hash(pw(c))))
+
+s -> db: hash(Payload)
+
+db *->* s: hash(hash(Payload), hash(pw(c)))
+
+Goals:
+s authenticates c on hash(N,hash(hash(Payload), hash(pw(c))))
+c -> s: Payload
+hash(pw(c)) secret between c,db
+
+#, hash(N,hash(hash(Payload), hash(pw(c))))
