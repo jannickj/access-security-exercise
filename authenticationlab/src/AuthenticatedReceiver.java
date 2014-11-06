@@ -31,12 +31,12 @@ public abstract class AuthenticatedReceiver extends UnicastRemoteObject implemen
 	}
 
 	@Override
-	public Serializable sendMessage(int msgId, Serializable[] load, String username,
-			long Nonce, String hash) throws RemoteException {
-		if (awaitingNonces.containsKey(username) && awaitingNonces.get(username) == Nonce)
+	public Serializable sendMessage(int msgId, Serializable[] load, String username, String hash) throws RemoteException {
+		if (awaitingNonces.containsKey(username))
 		{
-			String msgHash = AuthMsgHasher.generateMsgHash(msgId, Nonce, load);
-			if(msgAuth.checkHash(username, msgHash, hash))
+			long nonce = awaitingNonces.get(username);
+			String msgHash = AuthMsgHasher.generateMsgHash(msgId, load);
+			if(msgAuth.checkHash(username, nonce, msgHash, hash))
 			{
 				awaitingNonces.remove(username);
 				return respond(msgId, load);

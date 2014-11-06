@@ -55,7 +55,7 @@ public class AuthenticatedReceiverPrinter extends AuthenticatedReceiver {
 
 
 	@Override
-	public long getSalt(String username) throws RemoteException {
+	public String getSalt(String username) throws RemoteException {
 		return salter.getSalt(username);
 	}
 

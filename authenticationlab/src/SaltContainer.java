@@ -1,5 +1,5 @@
 
 public interface SaltContainer {
 	
-	long getSalt(String username);
+	String getSalt(String username);
 }

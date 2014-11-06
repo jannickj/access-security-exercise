@@ -13,16 +13,16 @@ public class MySqlConnector implements MessageAuthenticator, SaltContainer {
 	private Connection conn;
 	
 	@Override
-	public long getSalt(String username) {
+	public String getSalt(String username) {
 		
-		long salt = 0;
+		String salt = null;
 		try {
 			CallableStatement cStmt = conn.prepareCall("{? = call get_salt(?)}");
-			cStmt.registerOutParameter(1,java.sql.Types.BIGINT);
+			cStmt.registerOutParameter(1,java.sql.Types.VARCHAR);
 		
 			cStmt.setString(2, username);
 			cStmt.execute();
-			salt = cStmt.getLong(1);
+			salt = cStmt.getString(1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -31,18 +31,18 @@ public class MySqlConnector implements MessageAuthenticator, SaltContainer {
 	}
 
 	@Override
-	public boolean checkHash(String username, String MessageHash,
-			String FullHash) {
+	public boolean checkHash(String username, long nonce, String MessageHash, String FullHash) {
 		boolean authenticated = false;
 		try {
-			CallableStatement cStmt = conn.prepareCall("{? = call authenticate_message(?,?,?)}");
-			cStmt.registerOutParameter(1,java.sql.Types.BIGINT);
-		
+			CallableStatement cStmt = conn.prepareCall("{? = call authenticate_message(?,?)}");
+			cStmt.registerOutParameter(1,java.sql.Types.VARCHAR);
+
 			cStmt.setString(2, username);
 			cStmt.setString(3, MessageHash);
-			cStmt.setString(4, FullHash);
 			cStmt.execute();
-			authenticated = cStmt.getBoolean(1);
+			String userHash = cStmt.getString(1);
+			String noncedHash = AuthMsgHasher.generatedNoncedHash(nonce, userHash);
+			authenticated = FullHash.equals(noncedHash);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
