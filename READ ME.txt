@@ -1,0 +1,8 @@
+Java project
+Client is a runnable class which can take up to 3 arguments, defaults are used if none of them are stated [server adresse]. 
+Server is a runnable class which can take up to 3 arguments, defaults are used if none of them are stated [port] [db adresse] [log file location].
+ServerDummy this class is meant for easy testing is hardcoded with the user=admin, password=1234. It does not connect to the database and does not write a log file, instead it writes the log in the console.
+
+mysqldb
+printer_db.mwb is a database model file which can be opened using mysql workbench.
+printer_db.sql is the sql script that can generate the database, it automatically adds the user=admin, password=1234. However use the add user procedure to generate more users.
