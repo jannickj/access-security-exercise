@@ -31,8 +31,8 @@ public class MySqlConnector implements MessageAuthenticator, SaltContainer {
 	}
 
 	@Override
-	public boolean checkHash(String username, long nonce, String MessageHash, String FullHash) {
-		boolean authenticated = false;
+	public String signMessage(String username, String MessageHash) {
+		String signature = null;
 		try {
 			CallableStatement cStmt = conn.prepareCall("{? = call authenticate_message(?,?)}");
 			cStmt.registerOutParameter(1,java.sql.Types.VARCHAR);
@@ -40,14 +40,12 @@ public class MySqlConnector implements MessageAuthenticator, SaltContainer {
 			cStmt.setString(2, username);
 			cStmt.setString(3, MessageHash);
 			cStmt.execute();
-			String userHash = cStmt.getString(1);
-			String noncedHash = AuthMsgHasher.generatedNoncedHash(nonce, userHash);
-			authenticated = FullHash.equals(noncedHash);
+			signature = cStmt.getString(1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return authenticated;
+		return signature;
 	}
 
 }

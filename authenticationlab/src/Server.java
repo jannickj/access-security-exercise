@@ -1,3 +1,6 @@
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
@@ -13,30 +16,40 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 public class Server {
 
-	public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException, AlreadyBoundException, SQLException
+	public static void main(String[] args) throws NotBoundException, AlreadyBoundException, SQLException, IOException
 	{
-		Registry reg = LocateRegistry.createRegistry(1099);
-//		MessageAuthenticator msgAuth = new MessageAuthenticator() {
-//			
-//			@Override
-//			public boolean checkHash(String username, String MessageHash,
-//					String FullHash) {
-//				// TODO Auto-generated method stub
-//				System.out.println(username);
-//				System.out.println(MessageHash);
-//				System.out.println(FullHash);
-//				return AuthMsgHasher.generateUserHash("timmy", "123", 0, MessageHash).equals(FullHash);
-//			}
-//		};
-//		
-//		SaltContainer salter = new SaltContainer() {
-//			
-//			@Override
-//			public long getSalt(String username) {
-//				// TODO Auto-generated method stub
-//				return 2827251440285755392L;
-//			}
-//		};
+		int port = 1099;
+		String db = "localhost:3306";
+		String logfile = "message.log";
+		
+		if (args.length >= 1)
+			port = new Integer(args[0]);
+		if (args.length >= 2)
+			db = args[1];
+		if (args.length >= 3)
+			logfile = args[2];
+		final FileWriter logFile = new FileWriter(logfile);
+		
+		PrinterLogger logger = new PrinterLogger() {
+			
+			@Override
+			public void Write(String text) {
+				try {
+					logFile.write(text+"\n");
+					logFile.flush();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		};
+		
+		
+		Registry reg = LocateRegistry.createRegistry(port);
+		
+		
+		
 		try {
 		    System.out.println("Loading mysql driver...");
 		    Class.forName("com.mysql.jdbc.Driver");
@@ -44,11 +57,11 @@ public class Server {
 		} catch (ClassNotFoundException e) {
 		    throw new RuntimeException("Cannot find the driver in the classpath!", e);
 		}
-		
-		Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/printer_authentication?noAccessToProcedureBodies=true", "printer_server", "password");
-
+		Connection connection = DriverManager.getConnection("jdbc:mysql://"+db+"/printer_authentication?noAccessToProcedureBodies=true", "printer_server", "password");
 		MySqlConnector mysqlConn = new MySqlConnector(connection);
-		AuthenticatedReceiverPrinter authenticatedService = new AuthenticatedReceiverPrinter(mysqlConn,mysqlConn,new PrinterService());
+		
+		AuthenticatedReceiverPrinter authenticatedService = new AuthenticatedReceiverPrinter(mysqlConn,mysqlConn,new PrinterService(), logger);
+		
 		reg.rebind("Printer", authenticatedService);
 		
 	}

@@ -124,9 +124,9 @@ public class PrinterService implements Printer {
 		boolean isPaused = paused.get();
 		String runStatus;
 		if (isPaused && cur == null)
-			runStatus = "Stopping";
-		else if (isPaused)
 			runStatus = "Stopped";
+		else if (isPaused)
+			runStatus = "Stopping";
 		else
 			runStatus = "Running";
 		

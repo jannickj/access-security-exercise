@@ -9,9 +9,9 @@ public class AuthenticatedReceiverPrinter extends AuthenticatedReceiver {
 	private PrinterMessages[] msgTypes = PrinterMessages.values(); 
 	private SaltContainer salter;
 	
-	protected AuthenticatedReceiverPrinter(MessageAuthenticator msgAuth, SaltContainer salter, Printer service)
+	protected AuthenticatedReceiverPrinter(MessageAuthenticator msgAuth, SaltContainer salter, Printer service, MessageLogger logger)
 			throws RemoteException {
-		super(msgAuth);
+		super(msgAuth, logger);
 		this.service = service;
 		this.salter = salter;
 	}

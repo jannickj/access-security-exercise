@@ -11,10 +11,11 @@ public abstract class AuthenticatedReceiver extends UnicastRemoteObject implemen
 	private Random random = new Random();
 	private MessageAuthenticator msgAuth;
 	private HashMap<String,Long> awaitingNonces = new HashMap<String, Long>();
+	private MessageLogger logger;
 	
-	
-	protected AuthenticatedReceiver(MessageAuthenticator msgAuth) throws RemoteException {
+	protected AuthenticatedReceiver(MessageAuthenticator msgAuth, MessageLogger logger) throws RemoteException {
 		super();
+		this.logger = logger;
 		this.msgAuth = msgAuth;
 	}
 
@@ -32,18 +33,24 @@ public abstract class AuthenticatedReceiver extends UnicastRemoteObject implemen
 
 	@Override
 	public Serializable sendMessage(int msgId, Serializable[] load, String username, String hash) throws RemoteException {
+		Serializable resp = null;
 		if (awaitingNonces.containsKey(username))
 		{
 			long nonce = awaitingNonces.get(username);
 			String msgHash = AuthMsgHasher.generateMsgHash(msgId, load);
-			if(msgAuth.checkHash(username, nonce, msgHash, hash))
+			String signatureHash = msgAuth.signMessage(username, msgHash);
+			if(signatureHash != null && AuthMsgHasher.generatedNoncedHash(nonce, signatureHash).equals(hash))
 			{
+				logger.LogMessage(username, msgId, load, "Was authenticated by "+hash+" using nonce "+nonce+" and message signature "+signatureHash);
 				awaitingNonces.remove(username);
-				return respond(msgId, load);
+				resp = respond(msgId, load);
 			}
+			else
+				logger.LogMessage(username, msgId, load, "Message could not be authenticated by "+hash);
 			
 		}
-		return null;
+		
+		return resp;
 	}
 	
 	
