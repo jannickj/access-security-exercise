@@ -15,10 +15,28 @@ public class ServerDummy {
 
 	public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException, AlreadyBoundException, SQLException
 	{
+		//user = 3
+		//puser = 39
+		//tech = 504
+		//manag = 511
+		long user = 	
+				PrinterMessages.PRINT.getBinaryCode() |
+				PrinterMessages.QUEUE.getBinaryCode();
+		long puser = user |
+				PrinterMessages.TOP_QUEUE.getBinaryCode() |
+				PrinterMessages.RESTART.getBinaryCode();
+		long tech = 
+				PrinterMessages.SET_CONFIG.getBinaryCode() |
+				PrinterMessages.STOP.getBinaryCode() |
+				PrinterMessages.RESTART.getBinaryCode() |
+				PrinterMessages.READ_CONFIG.getBinaryCode() |
+				PrinterMessages.STATUS.getBinaryCode() |
+				PrinterMessages.START.getBinaryCode();
+		long manag = puser | tech;
+		
 		int port = 1099;
 		if (args.length > 0)
 			port = new Integer(args[0]);
-		
 		Registry reg = LocateRegistry.createRegistry(port);
 		
 		final String salt = "0";
@@ -45,7 +63,7 @@ public class ServerDummy {
 				return salt;
 			}
 		};
-		AuthenticatedReceiverPrinter authenticatedService = new AuthenticatedReceiverPrinter(msgAuth,salter,new PrinterService(),logger);
+		PrinterAuthenticatedReceiver authenticatedService = new PrinterAuthenticatedReceiver(msgAuth,salter,new PrinterService(),logger);
 		
 		
 		reg.rebind("Printer", authenticatedService);

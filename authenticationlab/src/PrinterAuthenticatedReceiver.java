@@ -3,13 +3,13 @@ import java.rmi.RemoteException;
 
 
 @SuppressWarnings("serial")
-public class AuthenticatedReceiverPrinter extends AuthenticatedReceiver {
+public class PrinterAuthenticatedReceiver extends AuthenticatedReceiver {
 
 	private Printer service;
 	private PrinterMessages[] msgTypes = PrinterMessages.values(); 
 	private SaltContainer salter;
 	
-	protected AuthenticatedReceiverPrinter(MessageAuthenticator msgAuth, SaltContainer salter, Printer service, MessageLogger logger)
+	protected PrinterAuthenticatedReceiver(MessageAuthenticator msgAuth, SaltContainer salter, Printer service, MessageLogger logger)
 			throws RemoteException {
 		super(msgAuth, logger);
 		this.service = service;

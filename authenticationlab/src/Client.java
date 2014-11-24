@@ -17,7 +17,7 @@ public class Client {
 		if (args.length >= 1)
 			server = args[0];
 		Authenticator authservice = (Authenticator) Naming.lookup("rmi://"+server+"/Printer");
-		AuthenticatedTransmitterPrinter service = null;
+		PrinterAuthenticatedTransmitter service = null;
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("type \"help\" to see available commands");
 		
@@ -32,7 +32,7 @@ public class Client {
 				switch(words[0].toLowerCase())
 				{
 				case "login":
-					service = new AuthenticatedTransmitterPrinter(words[1], words[2], authservice);
+					service = new PrinterAuthenticatedTransmitter(words[1], words[2], authservice);
 					break;
 				case "print":
 					service.print(words[1], words[2]);

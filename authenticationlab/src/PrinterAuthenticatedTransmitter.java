@@ -3,9 +3,9 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 
-public class AuthenticatedTransmitterPrinter extends AuthenticatedTransmitter implements Printer {
+public class PrinterAuthenticatedTransmitter extends AuthenticatedTransmitter implements Printer {
 
-	public AuthenticatedTransmitterPrinter(String username, String password,
+	public PrinterAuthenticatedTransmitter(String username, String password,
 			Authenticator auth) {
 		super(username, password, auth);
 	}

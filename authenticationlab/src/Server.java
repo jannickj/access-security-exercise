@@ -60,9 +60,18 @@ public class Server {
 		Connection connection = DriverManager.getConnection("jdbc:mysql://"+db+"/printer_authentication?noAccessToProcedureBodies=true", "printer_server", "password");
 		MySqlConnector mysqlConn = new MySqlConnector(connection);
 		
-		AuthenticatedReceiverPrinter authenticatedService = new AuthenticatedReceiverPrinter(mysqlConn,mysqlConn,new PrinterService(), logger);
+		PrinterAuthenticatedReceiver authenticatedService = new PrinterAuthenticatedReceiver(mysqlConn,mysqlConn,new PrinterService(), logger);
 		
-		reg.rebind("Printer", authenticatedService);
+		
+		//TO USE RBAC Uncomment the one below
+		//AccessControlContainer accessControl = mysqlConn.generateAccessControlFromRoles();
+		
+		//TO USE ACL Uncomment the one below
+		AccessControlContainer accessControl = mysqlConn.generateAccessControlFromList();
+		
+		AccessControlAuthenticator authenticator = new AccessControlAuthenticator(authenticatedService, accessControl, logger);
+		
+		reg.rebind("Printer", authenticator);
 		
 	}
 }
