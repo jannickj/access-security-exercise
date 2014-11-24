@@ -64,10 +64,10 @@ public class Server {
 		
 		
 		//TO USE RBAC Uncomment the one below
-		//AccessControlContainer accessControl = mysqlConn.generateAccessControlFromRoles();
+		AccessControlContainer accessControl = mysqlConn.generateAccessControlFromRoles();
 		
 		//TO USE ACL Uncomment the one below
-		AccessControlContainer accessControl = mysqlConn.generateAccessControlFromList();
+		//AccessControlContainer accessControl = mysqlConn.generateAccessControlFromList();
 		
 		AccessControlAuthenticator authenticator = new AccessControlAuthenticator(authenticatedService, accessControl, logger);
 		
